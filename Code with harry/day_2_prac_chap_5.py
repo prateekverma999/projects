@@ -1,0 +1,25 @@
+# # mydic={"home":"ghar","fan":"pankha","word":"sabd","book":"kitab"}
+# # # print(mydic)
+# # print(mydic.keys())
+# # a=input("Enter the word ")
+# # print("meaning of the word is ", mydic.get(a))
+# s=set()
+# s.add(18)
+# s.add(20)
+# s.add("18")
+
+# # print(len(s))
+# s.remove(18)
+# # print(s)
+# # print(s.pop())
+# s.clear()
+# print(s)
+# s=set()
+# s.add(1)
+# s.add(2)
+# s.add(3)
+# s.add(3)
+# print(s)
+
+
+print("5555"*5)

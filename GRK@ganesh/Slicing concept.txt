@@ -1,0 +1,42 @@
+
+
+If you want to slice from right to left, you need to provide a negative step: sample_list[-2:2:-1]. This will also reverse the order of the values.
+
+And a slice like [-2:2] isn't meaningless. If you do sample_list[-2:2] on a list of length two, you'd get a copy of the whole thing. In a list of length three,
+you'll get a slice with only the middle element. It's only for lists of length 4 or larger, you get an empty slice. If they reversed themselves automatically, 
+then some of those cases would be ambiguous.
+
+Edit: Let me try to make a more comprehensive explanation.
+
+
+Python's slice syntax is implemented by slice objects. That is, L[start:stop:step] is equivalent to L[slice(start, stop, step)].
+(Well, this is how it works in Python 3. For backwards compatibility reasons Python 2 also has an older approach, using __getslice__ and __setslice__ methods,
+but the newer way with slice objects works too.)
+
+When you take a slice or a list or tuple, you always get elements starting with the index start and continuing up until the element just before stop. 
+The step parameter describes the size of the steps taken, with 2 meaning every other value, and -1 meaning steps in reverse.
+
+Another way of thinking of it is that a slice L[start:stop:step] is almost equivalent to the list comprehension [L[i] for i in range(start, stop, step)]. 
+The differences are only in what happens when some of the values are negative or not provided.
+
+The rule for handling negative values is easy (and it's the same as for non-slice indexing). For start and stop, just add the length of the sequence to any
+negative value. So, for positive x and y, the slice L[-x:-y] is exactly equivalent to L[len(L)-x:len(L)-y]. Negative step values don't get transformed.
+
+Unlike regular indexing, slicing never raises exceptions for indexes out of range. If indexes are invalid, you may get an empty result, or just fewer values than the slice was asking for.
+
+Not all arguments to a slice are required. A slice object's constructor assigns None as default values for any argument not provided. What those Nones mean
+for start and stop differs depending on the sign of step, and also on the dimensions of the list that's being sliced.
+
+If step is None it is always treated as if it was 1. If step is positive (or None), a start value of None is treated as if it was 0 and a stop value of
+None is treated like len(L). If step is negative, a start value of None is treated as -1 and stop value of None is treated as -len(L)-1.
+
+So, to circle back to your question, when you do the slice sample_list[-2:2], several things happen:
+
+First off, a slice object is created, as if you did slice(-2, 2). That slice object will have a step of None, since you didn't provide a third value.
+
+Next, the slice is passed to the list and the values are interpreted. Since step was None, the default of 1 is used. Since start is negative, the length of the list is added to it.
+
+Finally, the results are figured out. For your example list with seven values, you get the equivalent of [sample_list[i] for i in range(5, 2, 1)]. Since the range is empty, the slice is too.
+
+Depending on what you wanted, you can fix this in a few different ways. You could leave it be and you'll get results only for very short source lists, where len(L)-2 is less than 2.
+Alternately, you could swap the order of your first two arguments, and get the result [3,4,5]. Or you could add a negative step and slice from right to left, resulting in [6, 5, 4].
