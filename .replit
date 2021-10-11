@@ -1,0 +1,2 @@
+language = "python3"
+run = "python Day_2_BMI_calculator.py"
